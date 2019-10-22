@@ -11,6 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 public class NoPopUpAuth implements AuthenticationEntryPoint {
 
+	//ADDING UNAUTH HEADER
 	@Override
 	public void commence(HttpServletRequest req, HttpServletResponse resp, AuthenticationException authEx)
 			throws IOException, ServletException {
