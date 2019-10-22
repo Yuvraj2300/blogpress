@@ -5,7 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.lrn.blgprss.constants.BlogpressConstants;
+
+/**
+ * @author ys19299
+ *
+ */
 @Controller
 public class BlogController {
 	private Logger logger = LoggerFactory.getLogger(BlogController.class);
@@ -13,6 +20,44 @@ public class BlogController {
 	@GetMapping("/")
 	public String showLandingPage(Model model) {
 		logger.info("This is from show landing page method");
+		setProcessingData(model, BlogpressConstants.TITLE_HOME_PAGE);
 		return "home";
 	}
+
+	@GetMapping("/contolPage")
+	public String showControlPage(Model model) {
+		logger.info("This is from control page method");
+		setProcessingData(model, BlogpressConstants.TITLE_LANDING_CONTROL_PAGE);
+		return "control-page";
+
+	}
+
+	@GetMapping("/login")
+	public String showLoginPage(@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout, Model model) {
+		logger.info("This is from login page method");
+
+		if (error != null) {
+			model.addAttribute("error", "Invalid Credentials Provided.");
+		}
+
+		if (logout != null) {
+			model.addAttribute("message", "Logged Out");
+		}
+
+		setProcessingData(model, BlogpressConstants.TITLE_LOGIN_PAGE);
+
+		return "login";
+	}
+
+	
+	/**
+	 * This method stores various data which are required on presentation layer.
+	 * @param model
+	 * @param pageTitle
+	 */
+	private void setProcessingData(Model model,String pageTitle) {
+		model.addAttribute(BlogpressConstants.PAGE_TITLE, pageTitle);
+	}
+
 }
