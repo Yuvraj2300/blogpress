@@ -15,7 +15,7 @@ import com.lrn.blgprss.constants.BlogpressConstants;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("com.lrn.blogprss.security")
+@ComponentScan("com.lrn.blogprss")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
@@ -52,6 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 	.and()
  	.logout()
  		.permitAll().logoutSuccessUrl("/login?error=true");
+		
+		http
+			.httpBasic()
+				.authenticationEntryPoint(new NoPopUpAuth());
+		
 		super.configure(http);
 	}
 }
