@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	}
 
+	//Always use BCrypt even in POCs
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -53,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
  	.logout()
  		.permitAll().logoutSuccessUrl("/login?error=true");
 		
+		//ADDING THIS SO THAT NP ALERT LOGIN IS SHOWN WHILE ACCESSING LINKS
 		http
 			.httpBasic()
 				.authenticationEntryPoint(new NoPopUpAuth());
