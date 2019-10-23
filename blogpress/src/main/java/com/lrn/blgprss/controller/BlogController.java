@@ -2,13 +2,20 @@ package com.lrn.blgprss.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lrn.blgprss.constants.BlogpressConstants;
 
+/**
+ * @author ys19299
+ *
+ */
 /**
  * @author ys19299
  *
@@ -50,6 +57,36 @@ public class BlogController {
 		return "login";
 	}
 
+	
+	/**
+	 * Method checks if user is logged in
+	 * @return a boolean if a user is logged in
+	 */
+	@ModelAttribute("validUserLogin")
+	public	boolean isUserLoggedIn() {
+		return SecurityContextHolder.getContext().getAuthentication() != null && 
+				SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
+				 //when Anonymous Authentication is enabled
+				 !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken); 
+	}
+	
+	@ModelAttribute("hasAdminRole")
+	public boolean checkIfUserHasAdminRole() {
+		return  checkIfUserHasRole(BlogpressConstants.ROLE_ADMIN);
+	}
+	
+	@ModelAttribute("hasUserRole")
+	public	boolean checkIfUserHasRole() {
+		return checkIfUserHasRole(BlogpressConstants.ROLE_USER);
+	}
+	
+	private	boolean checkIfUserHasRole(String roleName) {
+		boolean hasUserRole	=	SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities().stream()
+					.anyMatch(role->role.getAuthority().equals(roleName));
+		
+		return hasUserRole;
+	}
 	
 	/**
 	 * This method stores various data which are required on presentation layer.
