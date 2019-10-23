@@ -28,13 +28,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureUsers(AuthenticationManagerBuilder auth) throws Exception {
 		BCryptPasswordEncoder encoder = passwordEncoder();
+		//WE are using IN MEM AUTH, SO USERS WILL BE CREATED IN RUNTIME USING THIS CONFIG
 		auth.inMemoryAuthentication().passwordEncoder(encoder).withUser("user1").password(encoder.encode("user1"))
 				.authorities("ROLE_USER").and().withUser("admin").password(encoder.encode("admin"))
 				.authorities("ROLE_ADMIN");
 
 	}
 
-	//Always use BCrypt even in POCs
+	//Always use BCrypt, even in POCs
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
