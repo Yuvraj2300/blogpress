@@ -80,6 +80,11 @@ public class BlogController {
 		return checkIfUserHasRole(BlogpressConstants.ROLE_USER);
 	}
 	
+	/**
+	 * THIS METHOD CHECKS THE ROLE/AUTHORITIES OF ALL THE USERS AND MATCHES WITH THE PASSED USER ROLE. 
+	 * @param roleName
+	 * @return TRUE/FALSE
+	 */
 	private	boolean checkIfUserHasRole(String roleName) {
 		boolean hasUserRole	=	SecurityContextHolder.getContext()
 				.getAuthentication().getAuthorities().stream()
