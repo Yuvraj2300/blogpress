@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lrn.blgprss.constants.BlogpressConstants;
@@ -57,6 +58,18 @@ public class BlogController {
 		return "login";
 	}
 
+	
+	@GetMapping("/showAddNew")
+	public	String showAddNew(Model model) {
+		logger.info("Showing add new template");
+		setProcessingData(model, BlogpressConstants.TITLE_NEW_BLOG_PAGE);
+		return "add-new";
+	}
+	
+//	@PostMapping
+//	public String addNewBlog() {
+//		
+//	}
 	
 	/**
 	 * Method checks if user is logged in
