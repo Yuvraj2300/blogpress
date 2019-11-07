@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+
+
 <head th:replace="header :: jscssinclude"></head>
 
 <body>
     <div th:replace="header :: header_navigation"></div>
-	<div class="container blogpress-section">
+	<div class="container blogpress-section" style="padding:30px;">
 		<div th:if="${error !=null}">
 			<div class="alert alert-danger" role="alert">
 				Invalid credentials
