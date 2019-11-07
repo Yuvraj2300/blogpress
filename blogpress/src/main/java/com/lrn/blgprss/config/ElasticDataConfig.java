@@ -1,6 +1,7 @@
 package com.lrn.blgprss.config;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -17,14 +18,14 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @ComponentScan(basePackages = { "com.lrn.blgprss.config" })
 public class ElasticDataConfig {
 	
-	//@Value("$elasticsearch.host")
-	private String esHost="https://9ks8cttq1z:yvsbl1k6cu@blogpress-8020150717.ap-southeast-2.bonsaisearch.net:443";
+	@Value("#{new String('${elasticsearch.host}')}")
+	private String esHost;/*="localhost"*/ /*="blogpress-8020150717.ap-southeast-2.bonsaisearch.net";*/
 
 	//@Value("#{new Double('${item.priceFactor}')}")
 	@Value("#{new Integer('${elasticsearch.port}')}")
 	private int esPort;
 
-	@Value("$elasticsearh.cluster")
+	@Value("#{new String('${elasticsearch.clustername}')}")
 	private String esCluster;
 
 	@Bean
@@ -33,12 +34,16 @@ public class ElasticDataConfig {
 				new	TransportClientFactoryBean();
 		trsnsprtClientFactory.setClusterName(esCluster);
 		trsnsprtClientFactory.afterPropertiesSet();
+		
 		try {
 			return trsnsprtClientFactory.getObject().addTransportAddress(
 					new	 TransportAddress(InetAddress.getByName(esHost.trim()),esPort));	
+		/*	return trsnsprtClientFactory.getObject().addTransportAddress(
+					new	 TransportAddress(new InetSocketAddress("blogpress-8020150717.ap-southeast-2.bonsaisearch.net", 80)));*/
 		}catch(Exception	e) {
 			System.out.println("This is from catch for client bean: "+e.getMessage());
-			return null;
+			return trsnsprtClientFactory.getObject().addTransportAddress(
+					new	 TransportAddress(InetAddress.getByName(esHost.trim()),esPort));
 		}
 		
 
