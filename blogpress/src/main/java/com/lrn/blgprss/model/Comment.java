@@ -4,13 +4,19 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * @author ys19299
+ *
+ */
 public class Comment {
 	private String id;
 
 	private String blogId;
+	private	String	parentId;
 	private int childSequence;
 	private String position;
 	private String status;
+	private	int	level;
 	private String user;
 	private String emailAddress;
 	private String commentText;
@@ -18,6 +24,22 @@ public class Comment {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, 
 				pattern = "MM-dd-yyyy'T'HH:mm:ss")
 	private Date createdDate;
+	
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
 
 	public String getId() {
 		return id;
