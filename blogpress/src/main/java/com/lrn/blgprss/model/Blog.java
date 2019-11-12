@@ -12,30 +12,42 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Document(indexName = "blog", type = "blog")
 public class Blog {
+
+	/*
+	 * private String _id;
+	 * 
+	 * Commenting this cuz of: -
+	 * org.elasticsearch.index.mapper.MapperParsingException: Field [_id] is a
+	 * metadata field and cannot be added inside a document. Use the index API
+	 * request parameters.
+	 * 
+	 * Following suggstions from
+	 * https://stackoverflow.com/questions/40190288/use-of-id-for-document-
+	 * identifier-in-elastic-search
+	 * 
+	 */
 	@Id
-	private String _id;
+	private String id;
 	private String title;
 	private String body;
 	private String status;
 	private String createdBy;
-	
-	@JsonFormat
-	(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy'T'HH:mm:ss")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy'T'HH:mm:ss")
 	private Date createdDate;
-	
-	@JsonFormat
-	(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy'T'HH:mm:ss")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy'T'HH:mm:ss")
 	private Date publishDate;
-	
-	@Field(includeInParent=true,type=FieldType.Nested)
+
+	@Field(includeInParent = true, type = FieldType.Nested)
 	private List<Comment> comments;
 
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
 
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
