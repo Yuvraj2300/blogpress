@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.lrn.blgprss.model.Blog;
 
 @Repository
-public interface BlogRepository extends ElasticsearchRepository<Blog, String> {
+public interface BlogRepository extends BlogRepositoryCustom,ElasticsearchRepository<Blog, String> {
 
 }
