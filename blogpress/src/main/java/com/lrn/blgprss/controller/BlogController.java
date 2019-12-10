@@ -48,7 +48,14 @@ public class BlogController {
 		return "control-page";
 
 	}
-
+	
+	@GetMapping("/viewBlog")
+	public String viewBlogPage(Model model) {
+		logger.info("displaying the view blog page");
+		setProcessingData(model, BlogpressConstants.TITLE_VIEW_BLOG_PAGE);
+		return "view-blog";
+	}
+	
 	@GetMapping("/login")
 	public String showLoginPage(@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout, Model model) {
