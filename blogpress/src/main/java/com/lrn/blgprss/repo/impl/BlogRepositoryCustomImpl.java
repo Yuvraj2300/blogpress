@@ -7,6 +7,10 @@ import java.util.List;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.jboss.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lrn.blgprss.model.Blog;
+import com.lrn.blgprss.model.Comment;
 import com.lrn.blgprss.repo.BlogRepositoryCustom;
 
 @Repository
@@ -48,6 +53,11 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 	}
 
 
+	/**
+	 * @param 	response String/Response String to be passed into the method
+	 * @return 	A list of type Blog, consisting all the blogs that were obtained 
+	 * 			in the response 
+	 */
 	private List<Blog> getBlogListFromSearchJSON(String response) {
 		// TODO Auto-generated method stub
 		List<Blog> blogsList	=	new	 ArrayList<Blog>();
@@ -74,4 +84,58 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 		return blogsList;
 	}
 
+
+	@Override
+	public List<Comment> getAllComments(int from, int size) {
+		NestedAggregationBuilder	aggregation	=	AggregationBuilders.nested("aggChild", "comments")
+				.subAggregation(AggregationBuilders.topHits("aggSortComment")
+						.sort("comments.createdDate",SortOrder.DESC).from(from).size(size));
+		
+		
+		System.out.println("This is the aggregation query for "
+				+ "for getting the comment: "+aggregation.toString());
+		
+		SearchResponse	response	=	esTemp.getClient().prepareSearch("blog")
+											.setTypes("blog").addAggregation(aggregation)
+												.execute().actionGet();
+		List<Aggregation> responseAgg	=	response.getAggregations().asList();
+		
+		return getAllCommentsFromJSON(responseAgg.get(0).toString());
+	}
+
+	
+	public List<Comment>	getAllCommentsFromJSON(String response){
+		List<Comment> commentsList	=	new ArrayList<>();
+		ObjectMapper	mapper	=	new	 ObjectMapper();
+		
+		if (response != null) {
+			JSONObject searchJson = new JSONObject(response);
+			if (searchJson.get("aggChild") != null) {
+				JSONObject aggChildObj = searchJson.getJSONObject("aggChild");
+				if (aggChildObj != null && aggChildObj.getJSONObject("aggSortComment") != null) {
+					JSONObject aggSortCommentObj = aggChildObj.getJSONObject("aggSortComment");
+					if (aggSortCommentObj != null && aggSortCommentObj.getJSONObject("hits") != null) {
+						JSONObject hitObj = aggSortCommentObj.getJSONObject("hits");
+						try {
+							if (hitObj != null && hitObj.getJSONArray("hits") != null) {
+								JSONArray hitsArray = hitObj.getJSONArray("hits");
+
+									for(int i=0;i<hitsArray.length();i++) {
+										commentsList.add(mapper.readValue(
+												hitsArray.getJSONObject(i)
+												.getJSONObject("_source").toString(), Comment.class));
+									}
+							}
+						} catch (JSONException | IOException e) {
+							logger.error("There was an error parsing the resposnse JSON.");
+						}
+					}
+
+				}
+			}
+		}
+		
+		return commentsList;
+	}
+	
 }
