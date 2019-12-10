@@ -1,6 +1,9 @@
 package com.lrn.blgprss.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.lrn.blgprss.constants.BlogStatus;
 import com.lrn.blgprss.constants.BlogpressConstants;
 import com.lrn.blgprss.model.Blog;
+import com.lrn.blgprss.model.Comment;
 import com.lrn.blgprss.service.BlogService;
 
 /**
@@ -50,10 +54,52 @@ public class BlogController {
 	}
 	
 	@GetMapping("/viewBlog")
-	public String viewBlogPage(Model model) {
+	public String viewBlogPage(@RequestParam(value="blogId",required=true)String blogId,	Model model) {
 		logger.info("displaying the view blog page");
+		if(blogId != null) {
+			Blog	blog	=	blogService.getBlog(blogId);
+			List<Comment> approvedCommentList	=	null;
+			
+			if(blog.getComments()!=null && !blog.getComments().isEmpty()) {
+				approvedCommentList	=	blog.getComments()
+						.stream()
+								.filter(comment->comment
+												.getStatus()
+													.equalsIgnoreCase("A"))
+							.collect(Collectors.toList());
+				if(approvedCommentList!=null) {
+					blog.setComments(approvedCommentList);
+				}else {
+					blog.setComments(new ArrayList<Comment>());
+				}
+			}
+			
+			if (blog.getComments() == null || blog.getComments().isEmpty()) {
+				blog.setComments(new ArrayList<Comment>());
+			}
+			model.addAttribute("blog",blog);
+		}
+		
 		setProcessingData(model, BlogpressConstants.TITLE_VIEW_BLOG_PAGE);
 		return "view-blog";
+	}
+	
+	@PostMapping("/addComment")
+	public	String addComments(@RequestParam(value="blogId",required=true) String blogId,
+			 @RequestParam(value = "name",required = true) String name, 
+			 @RequestParam(value = "email",required = true) String email,
+			 @RequestParam(value = "comment",required = true) String comment,
+			 @RequestParam(value = "currentLevel",required = false,defaultValue="0") Integer currentLevel,
+			 @RequestParam(value = "parentId",required = false,defaultValue="0") String parentId,
+			 @RequestParam(value = "parentPosition",required = false) String parentPosition,
+			 Model model) {
+		logger.info("Add Comments Page");
+		
+		if(blogId!=null) {
+			StringBuffer currentPositionStr	=	new	StringBuffer();
+			int childSequence	=	blogService.getCurrentChildSeq(blogId,parentId);
+		}
+		return null;
 	}
 	
 	@GetMapping("/login")
