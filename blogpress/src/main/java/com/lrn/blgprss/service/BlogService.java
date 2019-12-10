@@ -3,6 +3,7 @@ package com.lrn.blgprss.service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,15 @@ public class BlogService {
 	}
 
 	
+	public Blog getBlog(String id) {
+		Optional<Blog> retBlog = blogRepo.findById(id);
+		if (retBlog.isPresent()) {
+			return retBlog.get();
+		} else {
+			return null;
+		}
+	}
+	
 	public List<Blog> getAllBlogs() {
 		List<Blog> blogList = new ArrayList<Blog>();
 		Iterable<Blog> blogIterable = blogRepo.findAll();
@@ -37,5 +47,8 @@ public class BlogService {
 		return blogRepo.getAllComments(from, size);
 	}
 	
+	public int getCurrentChildSeq(String blogId, String parentId) {
+		return blogRepo.getCurrentChildSeq(blogId,parentId);
+	}
 	
 }

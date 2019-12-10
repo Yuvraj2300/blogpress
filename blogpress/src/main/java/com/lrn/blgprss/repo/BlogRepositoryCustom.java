@@ -6,4 +6,5 @@ import com.lrn.blgprss.model.Comment;
 
 public interface BlogRepositoryCustom {
 	public List<Comment> getAllComments(int from,int size);
+	int getCurrentChildSeq(String blogId,String parentId);
 }
