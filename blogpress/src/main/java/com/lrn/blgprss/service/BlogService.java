@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lrn.blgprss.model.Blog;
+import com.lrn.blgprss.model.Comment;
 import com.lrn.blgprss.repo.BlogRepository;
 
 @Service
@@ -31,4 +32,10 @@ public class BlogService {
 
 		return blogList;
 	}
+	
+	public List<Comment> getAllComments(int from,int size){
+		return blogRepo.getAllComments(from, size);
+	}
+	
+	
 }
