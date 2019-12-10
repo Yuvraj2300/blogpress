@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lrn.blgprss.model.Blog;
+import com.lrn.blgprss.model.Comment;
 import com.lrn.blgprss.service.BlogService;
 
 @RestController
@@ -30,4 +31,13 @@ public class BlogRESTController {
 		//SKIPPING THE COMMENTS LOGIC FOR NOW
 		return new ResponseEntity<List<Blog>>(allBlogs,HttpStatus.OK);
 	}
+	
+	@GetMapping(value="/listComments",produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Comment>> getAllComments(){
+		logger.info("getting all the comments for blogs");
+		List<Comment> allComments	=	blogService.getAllComments(0,100);
+		
+		return new	 ResponseEntity<List<Comment>>(allComments,HttpStatus.OK);
+	}
+	
 }
