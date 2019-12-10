@@ -7,6 +7,7 @@ import java.util.List;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
@@ -136,6 +137,62 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 		}
 		
 		return commentsList;
+	}
+
+
+	@Override
+	public int getCurrentChildSeq(String blogId, String parentId) {
+		int currentChildSeq	=	0;
+		TermQueryBuilder termQueryBuilder	=	
+				new	 TermQueryBuilder("commnet.parentId",parentId);
+		
+		NestedAggregationBuilder	aggregationBuilder	=
+				AggregationBuilders.nested("aggChild", "comments")
+					.subAggregation(
+							AggregationBuilders.filter("filterParentid", termQueryBuilder)
+							.subAggregation(
+									AggregationBuilders.max("maxChildSeq")
+										.field("comments.childSequence")));
+		
+		TermQueryBuilder	rootTermQueryBuilder	=
+				new	TermQueryBuilder("_id",blogId);
+		
+		SearchResponse response	=	esTemp.getClient().prepareSearch("blog")
+				.setTypes("blog")
+				.setQuery(rootTermQueryBuilder)
+				.addAggregation(aggregationBuilder)
+				.execute().actionGet();
+		
+		
+		if(response!=null) {
+			if(response.getAggregations()!=null) {
+				List<Aggregation> aggList	=	response.getAggregations().asList();
+				if(aggList!=null) {
+					Aggregation resultAgg	=	aggList.get(0);
+					if(resultAgg!=null) {
+						currentChildSeq	=	getMaxChildSequenceFromJson(resultAgg.toString());
+					}
+				}
+			}
+		}
+		
+		currentChildSeq++;
+		
+		return currentChildSeq;
+	}
+
+
+	private int getMaxChildSequenceFromJson(String aggJson) {
+		int childSequence	=	0;
+		double maxChildSeq	=	0.0;
+		
+		if(aggJson!=null) {
+			JSONObject	commentJson	=	new JSONObject(aggJson);
+			if(commentJson.get("aggChild")!=null) {
+				
+			}
+		}
+		return 0;
 	}
 	
 }
