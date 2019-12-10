@@ -33,6 +33,8 @@
 				var template = $("#blog_template").html();
 				jQuery.get(/*[[@{/api/listBlogs}]]*/, function(data, status){
 					blogData["blogs"] = data;
+					console.log('logging the blog data');
+					console.log(blogData);
 			        var text = Mustache.render(template, blogData);
 			        $("#blogList").html(text);    
 			    });
