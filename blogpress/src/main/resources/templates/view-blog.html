@@ -8,16 +8,19 @@
 		<div class="blogpress-section">
 			<div class="form-row">
 				<div class="col-md-12 mb-3" th:if="${blog!=null}">
-					<p class="text-left display-4" th:text="${blog.title}">This is
-						the Blog title</p>
+				<!-- <div class="col-md-12 mb-3"> -->
+					<p class="text-left display-4" th:text="${blog.title}">This is the Blog title</p>
 					<p class="text-sm-left font-weight-light">
-						By <span th:text="${blog.createdBy}"> created by</span> comments:
-						23 Published on <span th:text="${blog.publishDateForDisplay}">published
-							Date</span></p>
+						By 
+						<span th:text="${blog.createdBy}"> created by</span> 
+						comments: 23 Published on 
+						<span th:text="${blog.publishDate}">published Date</span>
+					</p>
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="col-md-12 mb-3" th:if="${blog !=null}">
+			<!-- 	<div class="col-md-12 mb-3"> -->
 					<p class="text-left" th:text="${blog.body}">This is blog
 						content</p>
 				</div>
