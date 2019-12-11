@@ -94,7 +94,7 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 		
 		
 		System.out.println("This is the aggregation query for "
-				+ "for getting the comment: "+aggregation.toString());
+				+ "for getting the comments: "+aggregation.toString());
 		
 		SearchResponse	response	=	esTemp.getClient().prepareSearch("blog")
 											.setTypes("blog").addAggregation(aggregation)
@@ -140,11 +140,12 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 	}
 
 
+	//METHOD TO GET CURRENT CHILD SEQ FOR THE COMMENT
 	@Override
 	public int getCurrentChildSeq(String blogId, String parentId) {
 		int currentChildSeq	=	0;
 		TermQueryBuilder termQueryBuilder	=	
-				new	 TermQueryBuilder("commnet.parentId",parentId);
+				new	 TermQueryBuilder("comment.parentId",parentId);
 		
 		NestedAggregationBuilder	aggregationBuilder	=
 				AggregationBuilders.nested("aggChild", "comments")
@@ -186,13 +187,24 @@ public class BlogRepositoryCustomImpl implements BlogRepositoryCustom{
 		int childSequence	=	0;
 		double maxChildSeq	=	0.0;
 		
-		if(aggJson!=null) {
-			JSONObject	commentJson	=	new JSONObject(aggJson);
-			if(commentJson.get("aggChild")!=null) {
-				
+		if (aggJson != null) {
+			JSONObject commentJson = new JSONObject(aggJson);
+			if (commentJson.get("aggChild") != null) {
+				JSONObject aggChildObj = commentJson.getJSONObject("aggChild");
+				if (aggChildObj != null && aggChildObj.getJSONObject("filterParentid") != null) {
+					JSONObject filterParentObj = aggChildObj.getJSONObject("filterParentid");
+					if (filterParentObj != null && filterParentObj.getJSONObject("maxChildSeq") != null) {
+						JSONObject maxChildSeqObj = filterParentObj.getJSONObject("maxChildSeq");
+						if (maxChildSeqObj != null && maxChildSeqObj.get("value") != null
+								&& !JSONObject.NULL.equals(maxChildSeqObj.get("value"))) {
+							maxChildSeq = (Double) maxChildSeqObj.get("value");//maxChildSeq
+							childSequence = (int) maxChildSeq;
+						}
+					}
+				}
 			}
 		}
-		return 0;
+		return childSequence;
 	}
 	
 }
