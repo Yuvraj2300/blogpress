@@ -2,7 +2,7 @@ package com.lrn.blgprss.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;import java.util.stream.Collector;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.lrn.blgprss.constants.BlogStatus;
 import com.lrn.blgprss.constants.BlogpressConstants;
+import com.lrn.blgprss.constants.CommentStatus;
 import com.lrn.blgprss.model.Blog;
 import com.lrn.blgprss.model.Comment;
 import com.lrn.blgprss.service.BlogService;
+import com.lrn.blgprss.util.BlogpressUtil;
 
 /**
  * @author ys19299
@@ -98,8 +100,47 @@ public class BlogController {
 		if(blogId!=null) {
 			StringBuffer currentPositionStr	=	new	StringBuffer();
 			int childSequence	=	blogService.getCurrentChildSeq(blogId,parentId);
+		
+			//HERE CREATING THE CURRENT POSITION WHICH IS A COMBINATON OF LEVEL AND CHILD SEQ
+			if(parentPosition!=null) {
+				currentPositionStr.append(parentPosition).append(".");
+			}
+			currentPositionStr.append(currentLevel+1).append(".").append(childSequence);
+			
+			//NOW CREATING THE BLOG
+			Blog blog	=	blogService.getBlog(blogId);			
+			
+			if(blog!=null) {
+				List<Comment> blogComments	=	blog.getComments();
+				
+				//IF THERE ARE NO BLOGS THEN INITIATE THE LIST OBJECT 
+				if(blogComments	==	null) {
+					blogComments	=	new	ArrayList<Comment>();
+				}
+				
+				Date currentDate	=	new Date();
+				Comment blogComment	=	new	Comment();
+				blogComment.setId(BlogpressUtil.RandomNumber(currentDate));
+				blogComment.setBlogId(blogId);
+				blogComment.setParentId(parentId);
+				blogComment.setChildSequence(childSequence);
+				blogComment.setPosition(currentPositionStr.toString());
+				blogComment.setStatus(CommentStatus.MODERATE.getStatus());
+				blogComment.setLevel(currentLevel+1);
+				blogComment.setUser(name);
+				blogComment.setEmailAddress(email);
+				blogComment.setCommentText(comment);
+				blogComment.setCreatedDate(currentDate);
+				
+				blogComments.add(blogComment);
+				blog.setComments(blogComments);
+				blogService.addUpdateBlog(blog);
+				model.addAttribute("blog",blog);
+			}
 		}
-		return null;
+		
+		setProcessingData(model, BlogpressConstants.TITLE_VIEW_BLOG_PAGE);
+		return "redirect:viewBlog?blogId="+blogId;
 	}
 	
 	@GetMapping("/login")
