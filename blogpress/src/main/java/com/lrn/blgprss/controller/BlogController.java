@@ -86,6 +86,11 @@ public class BlogController {
 		return "view-blog";
 	}
 	
+	@GetMapping("/showComments")
+	public String showManageComments() {
+		return "manage-comments";
+	}
+	
 	@PostMapping("/addComment")
 	public	String addComments(@RequestParam(value="blogId",required=true) String blogId,
 			 @RequestParam(value = "name",required = true) String name, 
