@@ -50,5 +50,17 @@ public class BlogService {
 	public int getCurrentChildSeq(String blogId, String parentId) {
 		return blogRepo.getCurrentChildSeq(blogId,parentId);
 	}
-	
+
+	public void updateCommentStatus(String blogId, String commentId, List<Comment> commentList, String updatedStatus) {
+		if(commentList!=null) {
+			for(Comment comment:commentList) {
+				if(comment.getId().equals(commentId)) {
+					comment.setStatus(updatedStatus);
+				}
+			}
+			Blog blog	=	this.getBlog(blogId);
+			blog.setComments(commentList);
+			blogRepo.save(blog);
+		}
+	}
 }

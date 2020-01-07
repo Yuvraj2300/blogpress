@@ -32,9 +32,9 @@ public class BlogRESTController {
 		return new ResponseEntity<List<Blog>>(allBlogs,HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/listComments",produces=MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/listAllComments",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Comment>> getAllComments(){
-		logger.info("getting all the comments for blogs");
+		logger.info("getting all the cmments for blogs");
 		List<Comment> allComments	=	blogService.getAllComments(0,100);
 		
 		return new	 ResponseEntity<List<Comment>>(allComments,HttpStatus.OK);

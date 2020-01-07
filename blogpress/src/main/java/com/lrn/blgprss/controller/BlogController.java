@@ -88,6 +88,22 @@ public class BlogController {
 	
 	@GetMapping("/showComments")
 	public String showManageComments() {
+		logger.info("This si from showComments, for managing comments");
+		return "manage-comments";
+	}
+	
+	@PostMapping("/updateCommentStatus")
+	public	String updateCommentStatus(@RequestParam(value="blogId",required=true)String blogId,
+			@RequestParam(value="commentId",required=true)String commentId,
+			@RequestParam(value="commentStatus",required=true)String commentStatus,
+			Model model) {
+		logger.info("Approve Comment");
+		if(blogId!=null) {
+			Blog	blog	=	blogService.getBlog(blogId);
+			if(blog!=null) {
+				blogService.updateCommentStatus(blogId,commentId,blog.getComments(),commentStatus);
+			}
+		}
 		return "manage-comments";
 	}
 	
